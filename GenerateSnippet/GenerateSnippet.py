@@ -1,38 +1,65 @@
 import pyperclip
+import unittest
 
-content = pyperclip.paste()
+def SplitContentIntoLines(content, endOfLineSequence):
+	endOfLineSequences = {"cr" : "\r", "lf": "\n", "crlf" : "\r\n"}
+	endOfLineChar = endOfLineSequences[endOfLineSequence]
+	return content.split(endOfLineChar)
 
-cr = '\r'
-lf = '\n'
-crlf = cr + lf
+def EscapeDoubleQuotes(content):
+	escapeStr = '\\"'
+	return content.replace('"', escapeStr)
 
-endOfLineSequence = crlf
+def ReplaceSpacesWithTabDelimiter(content, tabSize):
+	tabIdentifier = tabSize * ' '
+	tabDelimiter = '\\t'
+	return content.replace(tabIdentifier, tabDelimiter)
 
-lines = content.split(endOfLineSequence)
+def AddDoubleQuotes(content):
+	return '"' + str(content) + '"'
 
-escapeDoubleQuotes = '\\"'
+def GenerateSnippetLines(lines, tabSize):
+	snippetLines = []
+	for line in lines:
+		line = ReplaceSpacesWithTabDelimiter(line, tabSize)
+		line = EscapeDoubleQuotes(line)
+		line = AddDoubleQuotes(line)
+		snippetLines.append(line)
+	return snippetLines
 
-# tab size of the source code you are copying from
-tabSize = 4
-tabIdentifier = tabSize * ' '
+def BuildSnippetBody(snippetLines):
+	bodyLineseparator = ',\n\t\t\t'
+	return bodyLineseparator.join(snippetLines)
 
-snippetLines = []
-for line in lines:
-	line = line.replace('"', escapeDoubleQuotes)
-	snippetLines.append('"' + line.replace(tabIdentifier, '\\t') + '"')
+def GenerateSnippetJson(snippetBody):
+	template = '''"KEY": {
+	"prefix": "",
+	"description": "",
+	"body": [
+		#TOKEN#
+	]
+},'''
+	return template.replace('#TOKEN#', snippetBody)
 
-bodyLineseparator = ',\n\t\t\t'
+def GetClipBoardContent():
+	return pyperclip.paste()
 
-body = bodyLineseparator.join(snippetLines)
+def PasteContentOntoClipBoard(content):
+	pyperclip.copy(content)
 
-template = '''"KEY": {
-		"prefix": "",
-		"description": "",
-		"body": [
-			#TOKEN#
-		]
-	},'''
+def GenerateSnippetAndPasteOntoClipBoard(endOfLineSequence, tabSize):
+	content = GetClipBoardContent()
 
-snippet = template.replace('#TOKEN#', body)
+	lines = SplitContentIntoLines(content, endOfLineSequence)
 
-pyperclip.copy(snippet)
+	snippetLines = GenerateSnippetLines(lines, tabSize)
+
+	body = BuildSnippetBody(snippetLines)
+
+	snippetJson = GenerateSnippetJson(body)
+
+	PasteContentOntoClipBoard(snippetJson)
+
+
+
+GenerateSnippetAndPasteOntoClipBoard("cr", 4)
