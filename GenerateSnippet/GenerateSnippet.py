@@ -1,5 +1,4 @@
 import pyperclip
-import unittest
 
 def SplitContentIntoLines(content, endOfLineSequence):
 	endOfLineSequences = {"cr" : "\r", "lf": "\n", "crlf" : "\r\n"}
@@ -28,7 +27,7 @@ def GenerateSnippetLines(lines, tabSize):
 	return snippetLines
 
 def BuildSnippetBody(snippetLines):
-	bodyLineseparator = ',\n\t\t\t'
+	bodyLineseparator = ',\n\t\t'
 	return bodyLineseparator.join(snippetLines)
 
 def GenerateSnippetJson(snippetBody):
@@ -62,4 +61,4 @@ def GenerateSnippetAndPasteOntoClipBoard(endOfLineSequence, tabSize):
 
 
 
-GenerateSnippetAndPasteOntoClipBoard("cr", 4)
+GenerateSnippetAndPasteOntoClipBoard("lf", 2)
