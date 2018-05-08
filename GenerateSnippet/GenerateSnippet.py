@@ -61,4 +61,4 @@ def GenerateSnippetAndPasteOntoClipBoard(endOfLineSequence, tabSize):
 
 
 
-GenerateSnippetAndPasteOntoClipBoard("lf", 2)
+GenerateSnippetAndPasteOntoClipBoard("crlf", 4)
